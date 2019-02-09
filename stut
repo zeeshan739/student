@@ -1,0 +1,559 @@
+//studentmanagement
+//entities
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMS_Entities
+{
+    [Serializable]
+    public class Student
+    {
+        static int count;
+
+        public Student()
+        {
+            count++;
+            RollNo = count;
+        }
+        public int RollNo { get; set; }
+        public string StudName { get; set; }
+        public DateTime DOB { get; set; }
+        public double FeesPaid { get; set; }
+        public string MobileNo { get; set; }
+
+    }
+}
+
+=========================================================================================================================
+//exception class
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMS_Exceptions
+{
+
+    [Serializable]
+    public class StudentNotFoundException : Exception
+    {
+        public StudentNotFoundException() { }
+        public StudentNotFoundException(string message) : base(message) { }
+       
+    }
+}
+
+
+====================================================================================
+//StudentDAL // ADD referncesm 
+using SMS_Entities;
+using SMS_Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMS_DAL
+{
+   
+    public class StudentDAL
+    {
+        public static List<Student> studs = new List<Student>();
+
+        public bool AddStudentDAL(Student student)
+        {
+            bool studentAdded = false;
+            try
+            {
+                studs.Add(student);
+                studentAdded = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return studentAdded;
+
+        }
+
+        //public static List<Student> ReturnStudentInformation()
+        //{
+        //    return studs;
+        //}
+        public Student SearchStudentDAL(int rollNo)
+        {
+
+            try
+            {
+                Student searchStudent = null;
+                foreach (var student in studs)
+                {
+                    if (student.RollNo == rollNo)
+                    {
+                        searchStudent = student;
+                    }
+
+                }
+                return searchStudent;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
+        }
+
+        public bool UpdateStudentDAL(Student student)
+        {
+            bool studentUpdated = true;
+            try
+            {
+                for (int i = 0; i < studs.Count; i++)
+                {
+                    if(studs[i].RollNo==student.RollNo)
+                    {
+                        studs[i].StudName = student.StudName;
+                        studs[i].DOB = student.DOB;
+                        studs[i].MobileNo = student.MobileNo;
+                        studs[i].FeesPaid = student.FeesPaid;
+                        break;
+                    }
+                }
+
+                //var stud = studs.Find(s => s.RollNo == student.RollNo);
+                //if (stud != null)
+                //{
+                //    stud.StudName = student.StudName;
+                //    stud.RollNo = student.RollNo;
+                //    stud.MobileNo = student.MobileNo;
+                //    stud.FeesPaid = student.FeesPaid;
+                //    stud.DOB = student.DOB;
+                //    studentUpdated = true;
+                //}
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return studentUpdated;
+        }
+
+        public  bool DeleteStudentDAL(int rollNo)
+        {
+            bool studentDeleted = false;
+            try
+            {
+                Student student = studs.Find(s => s.RollNo == rollNo);                
+                studs.Remove(student);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
+            return studentDeleted;
+        }
+
+        public static void SerializeData()
+        {
+            FileStream stream;
+            try
+            {
+                stream = new FileStream(@"Student.txt", FileMode.Create, FileAccess.Write);
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, studs);
+                stream.Close();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static List<Student> DeserializeData()
+        {
+            FileStream stream = new FileStream(@"Student.txt", FileMode.Open, FileAccess.Read);
+            BinaryFormatter formatter = new BinaryFormatter();
+            studs=formatter.Deserialize(stream) as List<Student>;
+            return studs;
+        }
+
+        //public bool DeleteStudentDAL(int deleteStudentID)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+
+
+        
+    }
+}
+=================================================================================================================
+//StudentBAL class
+using SMS_Entities;
+using SMS_Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SMS_DAL
+{
+   
+    public class StudentDAL
+    {
+        public static List<Student> studs = new List<Student>();
+
+        public bool AddStudentDAL(Student student)
+        {
+            bool studentAdded = false;
+            try
+            {
+                studs.Add(student);
+                studentAdded = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return studentAdded;
+
+        }
+
+        //public static List<Student> ReturnStudentInformation()
+        //{
+        //    return studs;
+        //}
+        public Student SearchStudentDAL(int rollNo)
+        {
+
+            try
+            {
+                Student searchStudent = null;
+                foreach (var student in studs)
+                {
+                    if (student.RollNo == rollNo)
+                    {
+                        searchStudent = student;
+                    }
+
+                }
+                return searchStudent;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
+        }
+
+        public bool UpdateStudentDAL(Student student)
+        {
+            bool studentUpdated = true;
+            try
+            {
+                for (int i = 0; i < studs.Count; i++)
+                {
+                    if(studs[i].RollNo==student.RollNo)
+                    {
+                        studs[i].StudName = student.StudName;
+                        studs[i].DOB = student.DOB;
+                        studs[i].MobileNo = student.MobileNo;
+                        studs[i].FeesPaid = student.FeesPaid;
+                        break;
+                    }
+                }
+
+                //var stud = studs.Find(s => s.RollNo == student.RollNo);
+                //if (stud != null)
+                //{
+                //    stud.StudName = student.StudName;
+                //    stud.RollNo = student.RollNo;
+                //    stud.MobileNo = student.MobileNo;
+                //    stud.FeesPaid = student.FeesPaid;
+                //    stud.DOB = student.DOB;
+                //    studentUpdated = true;
+                //}
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return studentUpdated;
+        }
+
+        public  bool DeleteStudentDAL(int rollNo)
+        {
+            bool studentDeleted = false;
+            try
+            {
+                Student student = studs.Find(s => s.RollNo == rollNo);                
+                studs.Remove(student);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
+            return studentDeleted;
+        }
+
+        public static void SerializeData()
+        {
+            FileStream stream;
+            try
+            {
+                stream = new FileStream(@"Student.txt", FileMode.Create, FileAccess.Write);
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, studs);
+                stream.Close();
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static List<Student> DeserializeData()
+        {
+            FileStream stream = new FileStream(@"Student.txt", FileMode.Open, FileAccess.Read);
+            BinaryFormatter formatter = new BinaryFormatter();
+            studs=formatter.Deserialize(stream) as List<Student>;
+            return studs;
+        }
+
+        //public bool DeleteStudentDAL(int deleteStudentID)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+
+
+        
+    }
+}
+
+=======================================================================================================
+Main Method Pl
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SMS_BAL;
+using SMS_Entities;
+using SMS_Exceptions;
+
+
+namespace SMS_PL
+{
+    class Program
+    {
+        public static void AddStudent()
+        {
+            try
+            {
+                Student student = new Student();
+                Console.WriteLine("Enter Student RollNo:");
+                student.RollNo = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter Student Name:");
+                student.StudName = Console.ReadLine();
+                Console.WriteLine("Enter Student DOB:");
+                student.DOB = Convert.ToDateTime(Console.ReadLine());
+                Console.WriteLine("Enter Student Mobile No:");
+                student.MobileNo =Console.ReadLine();
+                Console.WriteLine("Enter Fees to be paid");
+                student.FeesPaid = Convert.ToInt32(Console.ReadLine());
+
+                bool StudentAdded = StudentBAL.AddStudentBAL(student);
+                if (StudentAdded == true)
+                {
+                    Console.WriteLine("Student Added Successfully");
+                }
+                else
+                {
+                    throw new StudentNotFoundException("Student not added");
+                }
+                StudentBAL.SerializeData();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        public static void DeleteStudent()
+        {
+            int RollNo;
+            bool StudentDeleted;
+            try
+            {
+                Console.WriteLine("Enter Student RollNo to be deleted:");
+                RollNo = Convert.ToInt32(Console.ReadLine());
+
+                StudentDeleted = StudentBAL.DeleteStudentBAL(RollNo);
+                if (StudentDeleted == true)
+                {
+                    Console.WriteLine("Student Deleted Successfully:");
+                }
+                else
+                {
+                    throw new StudentNotFoundException("Student not Deleted");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public static void SearchStudent()
+        {
+
+            
+                int rollNo;
+                Student searchStudent;
+                try
+                {
+                    Console.WriteLine("Enter Student RollNo to be Searched:");
+                    rollNo = Convert.ToInt32(Console.ReadLine());
+
+                    searchStudent = StudentBAL.SearchStudentBAL(rollNo);
+                    if (searchStudent != null)
+                    {
+                        Console.WriteLine("Student ID:" + searchStudent.RollNo);
+                        Console.WriteLine("Student Name:" + searchStudent.StudName);
+                        Console.WriteLine("Student Mobile no:" + searchStudent.MobileNo);
+                        Console.WriteLine("Student DOB:" + searchStudent.DOB);
+                    }
+                    else
+                    {
+                        throw new StudentNotFoundException("Student not Found");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+       
+        public static void UpdateStudent()
+        {
+            Student studentToBeUpdated = new Student();
+            bool StudentUpdated;
+            try
+            {
+                Console.WriteLine("Enter Student ID for which you would like to update the record:");
+                studentToBeUpdated.RollNo = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter Student Name to be updated:");
+                studentToBeUpdated.StudName = Console.ReadLine();
+                Console.WriteLine("Enter Fees  to be updated:");
+                studentToBeUpdated.FeesPaid = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter Student Mobile No. to be updated:");
+                studentToBeUpdated.MobileNo = Console.ReadLine();
+                Console.WriteLine("Enter Student DOB to be updated:");
+                studentToBeUpdated.DOB = DateTime.Parse(Console.ReadLine());
+                StudentUpdated = StudentBAL.UpdateStudentBAL(studentToBeUpdated);
+
+                if (StudentUpdated == true)
+                {
+                    Console.WriteLine("Student Updated Successfully:");
+                }
+                else
+                {
+                    throw new StudentNotFoundException("Student not Updated");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public static void PrintMenu()
+        {
+            Console.WriteLine();
+            Console.WriteLine("**********Student Menu**********");
+            Console.WriteLine("1.Add Student\n");
+            Console.WriteLine("2.SearchStudent\n");
+            Console.WriteLine("3.Update Student\n");
+            Console.WriteLine("4.Delete Student\n");
+
+        }
+        static void Main(string[] args)
+        {
+
+            //StudentBAL bal = new StudentBAL();
+            //Student student1 = new Student { RollNo = 101, StudName = "Sravika", MobileNo = "123456", FeesPaid = 1200.0, DOB =Convert.ToDateTime(30 / 03 / 1997) };
+            //bal.Add(student1);
+
+            //Student student2 = new Student { RollNo = 102, StudName = "Sushmitha", MobileNo = "1234545", FeesPaid = 1240.0, DOB = Convert.ToDateTime(06 / 07 / 1996) };
+            //bal.Add(student2);
+            //var studs = bal.GetAll();
+            //foreach (var item in studs)
+            //{
+            //    Console.WriteLine("RollNo: " + student1.RollNo + "StudentName: " + student1.StudName + "MobileNo: " + student1.MobileNo + "FeesPaid: " + student1.FeesPaid + "DOB: " + student1.DOB);
+            //    Console.WriteLine("RollNo: " + student2.RollNo + "StudentName: " + student2.StudName + "MobileNo: " + student2.MobileNo + "FeesPaid: " + student2.FeesPaid + "DOB: " + student2.DOB);
+
+
+            //}
+            int choice;
+            do
+            {
+                PrintMenu();
+                bool validChoice;
+                Console.WriteLine("Enter your Choice Please:");
+                validChoice = Int32.TryParse(Console.ReadLine(),out choice);
+
+                if (!validChoice)
+                    Console.WriteLine("Enter the choice from 1-4");
+                else
+                {
+                    switch(choice)
+                    {
+                        case 1:
+                            AddStudent();
+                            break;
+                        case 2:
+                            SearchStudent();
+                            break;
+                        case 3:
+                            UpdateStudent();
+                            break;
+                        case 4:
+                            DeleteStudent();
+                            break;
+                        default: Console.WriteLine("Invalid Choice");
+                            break;
+                    }
+                }
+
+
+            } while (choice != 0);
+           Console.ReadKey();
+        }
+    }
+}
+
+
+
+
+
+
+
+
